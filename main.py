@@ -1,23 +1,3 @@
-'''
-to do list:
-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx|
-- take system                      | ✔
-- king's safety                    | ✔
-- danger highlight                 | ✔
-- en passant                       | ✔
-- castling                         | ✔
-- promotion                        | ✔
-- check for result (win/draw)      | ✔
-- game state indicator             | ✔
-- +5s time bonus on valid move     | ✔
-- SFX                              | ✔
-- result screen                    | ✔
-- ranks and files indication       | ✔
-- save game system                 | ✔
-- get save as readable text        | 
-  (a BIG maybe)                    | 
-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx|
-'''
 import pygame as pg
 from copy import copy
 from draw import draw_text, draw_board, draw_pieces, draw_promo_pieces
@@ -200,25 +180,6 @@ def resetElements():
   psx, psy, psw, psh = elements['promo_screen'].x, elements['promo_screen'].y, elements['promo_screen'].width, elements['promo_screen'].height
 
   dummy_promo_screen = pg.Rect(psx+(psw/10), psy+(psh/10), (psw-(psw/5))*2, (psh-(psh/5))*8)
-
-  '''
-  width for buttons is calculated with following logic
-  ratio for courier new font (monospace) (1 char)
-  width : height :: 0.6:1
-  when font size is set it actualy sets font height
-  so when font size is 2 height = 2px and width = (height*.6) = (2*.6) = 1.2px
-  the button width is determined with taking the total width of the string with this formula
-
-  for example (end game):
-    total_char = 8
-    font_size = button_height
-    button_height = (console_height*0.04)
-
-    button_width = font_size*0.6*total_char
-                 = (console_height*0.04)*0.6*total_char
-                 = console_height*(0.04*0.6*8)
-                 = console_height*0.192
-  '''
 
   buttons = {
     'new_game' : pg.Rect((elements['control_panel'].x+(elements['control_panel'].width/2))-((elements['control_panel'].height*.22)/2), elements['control_panel'].height/2, elements['control_panel'].height*.216, elements['control_panel'].height*.04),
