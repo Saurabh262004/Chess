@@ -51,7 +51,6 @@ current_audio = None
 
 saves = {
   'on_screen' : False,
-  'playing' : False,
   'nSaves' : int(open('data/nSaves').read()),
   'list' : [],
   'start_index' : 0,
@@ -61,11 +60,18 @@ saves = {
   'start_playback' : False,
   'current_playback_frame' : 0,
   'current_playback_move' : 0,
-  'moves_interval' : fps/3,
+  'moves_interval' : ,
   'promo_list' : [],
   'is_currently_on_promo' : None,
   'loaded_save_data' : None
 }
+
+b1ls1 = None
+b1ls2 = None
+b1le = None
+b2ls1 = None
+b2ls2 = None
+b2le = None
 
 def update_saves():
   global elements, saves
@@ -76,7 +82,6 @@ def update_saves():
 
   raw_list = open('data/savesList').read()
   save_name = ''
-  # print(len(raw_list))
 
   for char in raw_list:
     if char == '\n':
@@ -161,7 +166,7 @@ def play_audio(url, loops=0, start=0.0, fade_ms=0):
   current_audio = url
 
 def resetElements():
-  global saves, elements, board_size, dummy_promo_screen, screen_width, screen_height, buttons, buttons_cosmetic, game_state, game_state_indicator_x, cell_size, fonts
+  global saves, elements, board_size, dummy_promo_screen, screen_width, screen_height, buttons, buttons_cosmetic, game_state, game_state_indicator_x, cell_size, fonts, b1ls1, b1ls2, b1le, b2ls1, b2ls2, b2le
 
   board_size = screen_height*.8
 
@@ -210,6 +215,14 @@ def resetElements():
     saves['elements'].append(pg.Rect(elements['load_match'].x, elements['load_match'].y+((elements['load_match'].height/5)*(i-saves['start_index'])), elements['load_match'].width, elements['load_match'].height/5))
 
   conclusion_text_x_reset()
+
+  b1ls1 = [elements['list_up'].x+(elements['list_up'].width/4), (elements['list_up'].y+((elements['list_up'].height/4)*3))]
+  b1ls2 = [elements['list_up'].x+((elements['list_up'].width/4)*3), (elements['list_up'].y+((elements['list_up'].height/4)*3))]
+  b1le = [elements['list_up'].x+(elements['list_up'].width/2), (elements['list_up'].y+(elements['list_up'].height/4))]
+  b2ls1 = [elements['list_down'].x+(elements['list_down'].width/4), elements['list_down'].y+(elements['list_down'].height/4)]
+  b2ls2 = [elements['list_down'].x+((elements['list_down'].width/4)*3), elements['list_down'].y+(elements['list_down'].height/4)]
+  b2le = [elements['list_down'].x+(elements['list_down'].width/2), (elements['list_down'].y+((elements['list_down'].height/4)*3))]
+
 
   if not game_state_indicator_x == None:
     game_state_indicator_x = (screen_width - (elements['control_panel'].width)/2)-((buttons['new_game'].height*.6)*(len(game_state)/2))
@@ -286,6 +299,7 @@ def reset_UI():
 
   ## pieces ##
   for piece in game.match.pieces:
+    piece.board = elements['board']
     piece.element = pg.Rect(elements['board'].x + (cell_size * piece.pos[0] - cell_size), elements['board'].y + (cell_size * piece.pos[1] - cell_size), cell_size, cell_size)
     piece.update_image(cell_size)
 
@@ -406,10 +420,13 @@ def draw_game():
 
       pg.draw.rect(screen, rcol, saves['elements'][i])
       draw_text(screen, saves['list'][i], fonts['saves_list'], '#111111', elements['load_match'].x+5, saves['elements'][i].y+(saves['elements'][i].height/4))
-      # print(i)
 
     pg.draw.rect(screen, '#111111', elements['list_down'])
     pg.draw.rect(screen, '#111111', elements['list_up'])
+    pg.draw.line(screen, '#eeeeee', b1ls1, b1le)
+    pg.draw.line(screen, '#eeeeee', b1ls2, b1le)
+    pg.draw.line(screen, '#eeeeee', b2ls1, b2le)
+    pg.draw.line(screen, '#eeeeee', b2ls2, b2le)
 
 ## checks for a check mate or stale mate ##
 def check_for_mate(col):
@@ -625,6 +642,10 @@ while running:
             reset_UI()
             print('Game Aborted')
             play_audio('assets/audio/game_over.mp3')
+            saves['start_playback'] = False
+            saves['current_playback_move'] = 0
+            saves['current_playback_frame'] = 0
+            saves['is_currently_on_promo'] = False
           elif buttons['reset_board'].collidepoint(mouseX, mouseY) and not (game.match.state == 'onGoing'):
             game.match.set_default_pieces()
             reset_UI()
